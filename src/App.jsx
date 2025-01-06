@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useCurrencyInfo from "./hooks/useCurrencyInfo";
 import InputBox from "./components/InputBox";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
 function App() {
@@ -8,6 +10,7 @@ function App() {
   const [convertedAmount, setConvertedAmount] = useState(0);
   const [from, setFrom] = useState("usd");
   const [to, setTo] = useState("inr");
+  const [isFetching, setIsFetching] = useState(false);
 
   const { data: currencyInfo, loading, error } = useCurrencyInfo(from);
 
@@ -24,60 +27,51 @@ function App() {
     setConvertedAmount(amount * currencyInfo[to]);
   };
 
-  if (loading) {
-    return (
-      <div
-        className="w-full h-screen flex justify-center items-center bg-cover bg-no-repeat animate-fadeIn"
-        style={{
-          backgroundImage: `url('https://images.pexels.com/photos/27920235/pexels-photo-27920235/free-photo-of-real-estate-business-finance-background-template-cross-section-building.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')`,
-        }}
-      >
-        <div className="absolute inset-0 bg-black opacity-60"></div>
-        <div className="text-center text-white animate-bounce z-10">
-          <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-blue-600 border-solid mb-4 mx-auto"></div>
-          <h2 className="text-3xl font-bold">Loading...</h2>
-        </div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!loading && !error && !isFetching) {
+      setIsFetching(true);
+    }
 
-  if (error) {
-    return (
-      <div
-        className="w-full h-screen flex justify-center items-center bg-cover bg-no-repeat"
-        style={{
-          backgroundImage: `url('https://images.pexels.com/photos/27920235/pexels-photo-27920235/free-photo-of-real-estate-business-finance-background-template-cross-section-building.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')`,
-        }}
-      >
-        <div className="absolute inset-0 bg-black opacity-60"></div>
-        <div className="text-center text-white text-2xl font-bold z-10">
-          {error}
-        </div>
-      </div>
-    );
-  }
+    if (loading) {
+      toast.info("Loading...", {
+        position: "top-right",
+        autoClose: 400,
+        pauseOnHover: true,
+      });
+    } else if (error) {
+      toast.error(`Error: ${error}`, {
+        position: "top-right",
+        pauseOnHover: true,
+      });
+      setIsFetching(false);
+    } else {
+      setIsFetching(false);
+    }
+  }, [from, loading, error, isFetching]);
+
+  useEffect(() => {
+    if (currencyInfo && !loading) {
+      setIsFetching(false);
+    }
+  }, [currencyInfo, loading]);
 
   return (
-    <div
-      className="w-full h-screen flex flex-wrap justify-center items-center bg-cover bg-no-repeat bg-fixed"
-      style={{
-        backgroundImage: `url('https://images.pexels.com/photos/27920235/pexels-photo-27920235/free-photo-of-real-estate-business-finance-background-template-cross-section-building.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')`,
-      }}
-    >
+    <div className="w-full h-screen flex flex-wrap justify-center items-center bg-dark">
+      <ToastContainer />
       <div className="absolute top-10 text-center w-full">
-        <h1 className="text-4xl font-extrabold text-white animate-bounce">
-          KS Currency Converter
+        <h1 className="text-5xl font-extrabold text-white animate-bounce">
+          K' s Currency Converter
         </h1>
       </div>
 
-      <div className="w-full max-w-lg mx-auto p-6 border-2 border-white rounded-xl backdrop-blur-md bg-black/50 shadow-lg animate-slideInUp">
+      <div className="w-full max-w-lg mx-auto p-8 border-2 border-gray-400 rounded-xl backdrop-blur-md bg-black/80 shadow-lg animate-slideInUp">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             convert();
           }}
         >
-          <div className="w-full mb-4">
+          <div className="w-full mb-6">
             <InputBox
               label="From"
               amount={amount}
@@ -91,10 +85,10 @@ function App() {
               className="input-box"
             />
           </div>
-          <div className="relative w-full h-0.5 mb-4">
+          <div className="relative w-full mb-6">
             <button
               type="button"
-              className="absolute left-1/2 transform -translate-x-1/2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-400 hover:to-blue-600 text-white font-semibold py-2 px-4 rounded-full transition-all ease-in-out duration-300"
+              className="absolute left-1/2 transform -translate-x-1/2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-gray-400 to-gray-600 hover:from-gray-600 hover:to-gray-400 text-white font-semibold py-3 px-5 rounded-full shadow-md transition-all ease-in-out duration-300"
               onClick={swap}
             >
               Swap
@@ -113,7 +107,7 @@ function App() {
           </div>
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-green-500 to-green-300 hover:from-green-300 hover:to-green-500 text-white px-6 py-3 rounded-xl font-semibold transition duration-300 transform hover:scale-105"
+            className="w-full bg-gradient-to-r from-gray-600 to-gray-400 hover:from-gray-400 hover:to-gray-600 text-white px-6 py-3 rounded-xl font-semibold transition duration-300 transform hover:scale-105 shadow-lg"
           >
             Convert {from.toUpperCase()} to {to.toUpperCase()}
           </button>

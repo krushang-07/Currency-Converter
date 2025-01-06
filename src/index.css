@@ -3,6 +3,39 @@
 @tailwind utilities;
 
 @layer utilities {
+  /* Custom dark theme background */
+  .bg-dark {
+    background-color: #000000; /* Black background */
+  }
+
+  /* Custom gray gradient for inputs and buttons */
+  .input-box {
+    background-color: #222222; /* Dark gray */
+    color: #ffffff;
+    border: 2px solid #444444;
+    padding: 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .input-box:focus {
+    border-color: #ffffff; /* White focus border */
+    outline: none;
+  }
+
+  /* Button styles */
+  .btn-dark {
+    background-color: #444444;
+    color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-dark:hover {
+    background-color: #555555;
+  }
+
   /* Custom animations */
   @keyframes fadeIn {
     0% {
@@ -45,5 +78,28 @@
 
   .animate-bounce {
     animation: bounce 1s ease-in-out infinite;
+  }
+
+  /* Button hover effects */
+  .btn:hover {
+    transform: translateY(-3px);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  /* General page structure and spacing */
+  .page-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  /* Focused input box */
+  .input-box:focus {
+    border-color: #4a90e2;
   }
 }
